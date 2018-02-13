@@ -1,0 +1,77 @@
+{
+  consul: 'localhost:8500',
+  jobs: [
+    {
+      name: 'setup-config',
+      exec: '/bin/prestart.sh'
+    },
+    {
+      name: 'consul-agent',
+      exec: ['/usr/local/bin/consul', 'agent',
+                  '-data-dir=/data',
+                  '-config-dir=/config',
+                  '-log-level=err',
+                  '-rejoin',
+                  '-retry-join', '{{ .CONSUL | default "consul" }}',
+                  '-retry-max', '20',
+                  '-retry-interval', '5s'],
+      restarts: 'unlimited',
+      health: {
+        exec: "curl -so /dev/null http://localhost:8500",
+        interval: 10,
+        ttl: 25,
+      },
+      when: {
+        source: 'setup-config',
+        once: 'exitSuccess'
+      }
+    },
+    {
+      name: 'node',
+      port: {{.PORT}},
+      exec: '{{ .NODE_START | default "node ."}}',
+      health: {
+        exec: '/usr/bin/curl -o /dev/null --fail -s http://127.0.0.1:{{.PORT}}/{{ .HEALTH_ENDPOINT | default "health" }}',
+        interval: 5,
+        ttl: 5
+      },
+      interfaces: ["eth0", "eth1"],
+      restarts: 'unlimited'
+    }
+  ],
+  watches: [],
+  telemetry: {
+    port: 9090,
+    tags: ['op'],
+    metrics: [
+      {
+        namespace: '{{.NAMESPACE | default "app"}}',
+        subsystem: 'request',
+        name: 'concurrent',
+        help: 'Number of concurrent requests',
+        type: 'gauge'
+      },
+      {
+        namespace: '{{.NAMESPACE | default "app"}}',
+        subsystem: 'process',
+        name: 'up_time',
+        help: 'Process up time',
+        type: 'counter'
+      },
+      {
+        namespace: '{{.NAMESPACE | default "app"}}',
+        subsystem: 'process',
+        name: 'mem_rss',
+        help: 'Process memory RSS usage',
+        type: 'gauge'
+      },
+      {
+        namespace: '{{.NAMESPACE | default "app"}}',
+        subsystem: 'process',
+        name: 'heap_used',
+        help: 'Process heap usage',
+        type: 'gauge'
+      }
+    ]
+  }
+}

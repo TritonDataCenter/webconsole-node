@@ -1,0 +1,11 @@
+example:
+  build: ./
+  restart: always
+  mem_limit: 1g
+  environment:
+    - CONSUL=consul
+    - HEALTH_ENDPOINT=health
+    - NODE_START=node app.js
+    - PORT=5000
+  ports:
+    - 80:5000
