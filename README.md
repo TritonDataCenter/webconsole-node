@@ -1,18 +1,10 @@
 # webconsole-node
 
-Node.js application managed by [ContainerPilot](https://github.com/joyent/containerpilot). This is meant to be a base image that can be extended.
+Node.js application managed by [tini](https://github.com/krallin/tini). This is meant to be a base image that can be extended.
 
 ## Configuration
 
 A basic application can be set up by `COPY`ing nginx and Node.js files (application code, conf file, keys, certs, etc.) into the `webconsole-node` image. See the Dockerfile in the [example](./example) directory.
-
-### Environment Variables
-
-`webconsole-node` supports the following environment variables:
-
-- `NODE_START` - The command used to start the Node.js application. Defaults to `node .`.
-- `PORT` - The port used by the Node.js application. Defaults to `5000`.
-- `HEALTH_ENDPOINT` - The HTTP endpoint of the Node.js application used for performing application health checks. Defaults to `health`.
 
 ### `prestart.sh`
 

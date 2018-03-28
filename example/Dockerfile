@@ -1,6 +1,5 @@
-FROM joyent/webconsole-node:0.0.1
+FROM joyent/webconsole-node:latest
 
 # Setup the Node.js app
-RUN mkdir -p /opt/app/
-WORKDIR /opt/app/
-COPY ./app.js /opt/app/app.js
+COPY ./app.js /opt/app
+CMD ["node", "app.js"]
