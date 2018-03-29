@@ -1,4 +1,4 @@
-FROM node:8.10-alpine
+FROM node:8.11-alpine
 
 RUN apk add --no-cache --update curl bash openssl openssh tini python build-base \
     && apk upgrade
@@ -11,4 +11,3 @@ RUN mkdir -p /opt/app/
 WORKDIR /opt/app/
 
 ENTRYPOINT ["/sbin/tini", "--", "/bin/entrypoint.sh"]
-
